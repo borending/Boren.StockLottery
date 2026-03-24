@@ -38,5 +38,4 @@ jobs:
         working-directory: Boren.StockLottery
         run: dotnet run --project Boren.StockLottery.csproj -c Release --no-build
         env:
-          AppSettings__CalendarId: ${{ secrets.CALENDAR_ID }}
           AppSettings__PremiumThresholdPercent: ${{ vars.PREMIUM_THRESHOLD_PERCENT }}
