@@ -1,0 +1,38 @@
+name: Stock Lottery
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # UTC 03:00 = Asia/Taipei 11:00
+  workflow_dispatch:       # 手動觸發
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache SQLite DB
+        uses: actions/cache@v4
+        with:
+          path: Boren.StockLottery/data/lottery.db
+          key: lottery-db-${{ github.run_id }}
+          restore-keys: lottery-db-
+
+      - name: Restore Google credentials
+        run: |
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > Boren.StockLottery/credentials.json
+          mkdir -p Boren.StockLottery/data/token
+          echo '${{ secrets.GOOGLE_TOKEN }}' > Boren.StockLottery/data/token/Google.Apis.Auth.OAuth2.Responses.TokenResponse-user
+
+      - name: Run
+        working-directory: Boren.StockLottery
+        run: dotnet run --project Boren.StockLottery.csproj -c Release
+        env:
+          AppSettings__CalendarId: ${{ secrets.CALENDAR_ID }}
+          AppSettings__PremiumThresholdPercent: ${{ vars.PREMIUM_THRESHOLD_PERCENT }}

@@ -1,8 +1,10 @@
 using Boren.StockLottery.Configuration;
 using Boren.StockLottery.Services;
-using Boren.StockLottery.Workers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using var cts = new CancellationTokenSource();
+Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((ctx, services) =>
@@ -25,8 +27,13 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IIbfsService, IbfsService>();
         services.AddSingleton<ICalendarService, GoogleCalendarService>();
         services.AddSingleton<ILotteryOrchestrator, LotteryOrchestrator>();
-        services.AddHostedService<SchedulerHostedService>();
     })
     .Build();
 
-await host.RunAsync();
+var repository = host.Services.GetRequiredService<IStockRepository>();
+var calendarService = host.Services.GetRequiredService<ICalendarService>();
+var orchestrator = host.Services.GetRequiredService<ILotteryOrchestrator>();
+
+await repository.InitializeAsync();
+await calendarService.InitializeAsync(cts.Token);
+await orchestrator.RunAsync(cts.Token);

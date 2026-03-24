@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(GIT_DIR=gitback git log --oneline -- Boren.StockLottery/readme.md readme.md)",
+      "Bash(GIT_DIR=gitback git log --oneline)",
+      "Bash(GIT_DIR=gitback git show 81a02f0:Boren.StockLottery/readme.md)",
+      "Bash(GIT_DIR=gitback git show 81a02f0:readme.md)",
+      "Bash(GIT_DIR=gitback git log --all --oneline 2>/dev/null)",
+      "Bash(GIT_DIR=gitback git ls-tree -r --name-only HEAD 2>/dev/null)"
+    ]
+  }
+}
