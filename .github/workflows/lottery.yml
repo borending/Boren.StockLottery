@@ -17,22 +17,26 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Build
+        working-directory: Boren.StockLottery
+        run: dotnet build -c Release
+
       - name: Cache SQLite DB
         uses: actions/cache@v4
         with:
-          path: Boren.StockLottery/data/lottery.db
+          path: Boren.StockLottery/bin/Release/net8.0/data/lottery.db
           key: lottery-db-${{ github.run_id }}
           restore-keys: lottery-db-
 
       - name: Restore Google credentials
         run: |
-          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > Boren.StockLottery/credentials.json
-          mkdir -p Boren.StockLottery/data/token
-          echo '${{ secrets.GOOGLE_TOKEN }}' > Boren.StockLottery/data/token/Google.Apis.Auth.OAuth2.Responses.TokenResponse-user
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > Boren.StockLottery/bin/Release/net8.0/credentials.json
+          mkdir -p "Boren.StockLottery/bin/Release/net8.0/data/token"
+          echo '${{ secrets.GOOGLE_TOKEN }}' > "Boren.StockLottery/bin/Release/net8.0/data/token/Google.Apis.Auth.OAuth2.Responses.TokenResponse-user"
 
       - name: Run
         working-directory: Boren.StockLottery
-        run: dotnet run --project Boren.StockLottery.csproj -c Release
+        run: dotnet run --project Boren.StockLottery.csproj -c Release --no-build
         env:
           AppSettings__CalendarId: ${{ secrets.CALENDAR_ID }}
           AppSettings__PremiumThresholdPercent: ${{ vars.PREMIUM_THRESHOLD_PERCENT }}
