@@ -57,7 +57,7 @@ json 範例:
 | 層次 | 技術 |
 |------|------|
 | Runtime | .NET 8.0 (C#) |
-| 執行模式 | `IHostedService` / `BackgroundService` (Generic Host) |
+| 執行模式 | Run-and-exit console app（排程由 GitHub Actions 負責） |
 | 資料來源 | ibfs.com.tw HTML（`HtmlAgilityPack` 解析） |
 | 行事曆整合 | Google Calendar API v3（OAuth 2.0） |
 | 本地儲存 | SQLite（`Microsoft.Data.Sqlite`，無 EF Core） |
