@@ -99,24 +99,35 @@ SqliteStockRepository.MarkProcessedAsync(StockCode, LotteryDate)
 ## 專案結構
 
 ```
-Boren.StockLottery/
-├── Program.cs                          # Generic Host 入口，DI 註冊
-├── appsettings.json                    # 設定檔
-├── credentials.json                    # Google OAuth 憑證（不入 git）
-├── Configuration/
-│   └── AppSettings.cs                  # 設定 model
-├── Models/
-│   └── StockSubscription.cs            # 申購資料 model
-├── Services/
-│   ├── IbfsService.cs / IIbfsService   # ibfs.com.tw HTML 爬蟲
-│   ├── GoogleCalendarService.cs        # Google 日曆 OAuth + 事件建立
-│   ├── SqliteStockRepository.cs        # 已處理紀錄（防重複）
-│   └── LotteryOrchestrator.cs          # 主流程協調
-└── Workers/
-    └── SchedulerHostedService.cs       # 排程 BackgroundService
-
-Boren.StockLottery.Tests/
-└── IbfsServiceIntegrationTest.cs       # ibfs 解析正確性驗證
+● Boren.StockLottery/
+  ├── .github/
+  │   └── workflows/
+  │       └── lottery.yml                 # GitHub Actions，每日 03:00 UTC 執行
+  │
+  ├── Boren.StockLottery/                 # 主專案
+  │   ├── Configuration/
+  │   │   └── AppSettings.cs             # 設定 POCO
+  │   ├── Models/
+  │   │   └── StockSubscription.cs       # 資料模型
+  │   ├── Services/
+  │   │   ├── IIbfsService.cs
+  │   │   ├── IbfsService.cs             # ibfs.com.tw HTML 爬蟲
+  │   │   ├── ICalendarService.cs
+  │   │   ├── GoogleCalendarService.cs   # Google Calendar OAuth + 建立事件
+  │   │   ├── ILotteryOrchestrator.cs
+  │   │   ├── LotteryOrchestrator.cs     # 主流程編排
+  │   │   ├── IStockRepository.cs
+  │   │   └── SqliteStockRepository.cs   # SQLite 持久化（冪等）
+  │   ├── Program.cs                     # 進入點，DI 設定，直接執行後退出
+  │   ├── appsettings.json
+  │   ├── credentials.json               # Google OAuth（不進 git）
+  │   └── Boren.StockLottery.csproj
+  │
+  ├── Boren.StockLottery.Tests/
+  │   ├── IbfsServiceIntegrationTest.cs  # NUnit，打真實 ibfs.com.tw
+  │   └── Boren.StockLottery.Tests.csproj
+  │
+  └── Boren.StockLottery.sln
 ```
 
 ---

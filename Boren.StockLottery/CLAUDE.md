@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Boren.StockLottery is a .NET 8.0 C# console application that runs as a long-lived background service. It scrapes Taiwan stock public subscription data from ibfs.com.tw daily, and creates Google Calendar reminders for stocks whose premium ratio meets the configured threshold.
+Boren.StockLottery is a .NET 8.0 C# console application that runs as a one-shot process (run-and-exit). It scrapes Taiwan stock public subscription data from ibfs.com.tw, creates Google Calendar reminders for stocks whose premium ratio meets the configured threshold, then exits. Scheduling is handled externally by GitHub Actions (cron: daily 03:00 UTC = 11:00 Asia/Taipei).
 
 ## Commands
 
@@ -15,7 +15,7 @@ dotnet restore
 # Build
 dotnet build
 
-# Run (stays alive, waits for scheduled time; in DEBUG mode runs immediately)
+# Run (runs immediately, processes subscriptions, then exits)
 dotnet run --project Boren.StockLottery/Boren.StockLottery.csproj
 
 # Build release
@@ -27,9 +27,7 @@ dotnet test
 
 ## Architecture
 
-**Entry point:** `Program.cs` — Generic Host (`IHostedService`) with a named `HttpClient` ("ibfs") and DI setup.
-
-**Background worker:** `Workers/SchedulerHostedService.cs` — `BackgroundService` that sleeps until the configured daily time, then invokes the orchestrator. In `#if DEBUG` mode the delay is skipped and it runs immediately. Initializes DB and Google Calendar OAuth on startup.
+**Entry point:** `Program.cs` — Generic Host with a named `HttpClient` ("ibfs") and DI setup. Directly calls `repository.InitializeAsync()`, `calendarService.InitializeAsync()`, then `orchestrator.RunAsync()`, and exits. No background scheduling in-process — GitHub Actions handles the schedule.
 
 **Core workflow:** `Services/LotteryOrchestrator.cs`
 1. Fetch active subscriptions (status = 申購) from ibfs.com.tw via `IbfsService`
@@ -52,7 +50,7 @@ dotnet test
 **Calendar event title format:** `{StockCode}{StockName} {SubscriptionPrice:0}:{premiumRatio:F2}%`
 Two all-day events are created: one on the day before subscription end date, one on the lottery date.
 
-**Configuration:** `appsettings.json` → `Configuration/AppSettings.cs` (section key: `"AppSettings"`)
+**Configuration:** `appsettings.json` → `Configuration/AppSettings.cs` (section key: `"AppSettings"`). Can also be overridden via env vars (e.g. `AppSettings__PremiumThresholdPercent`) — used by GitHub Actions to inject `vars.PREMIUM_THRESHOLD_PERCENT`.
 
 ## Tests
 
@@ -70,7 +68,6 @@ Two all-day events are created: one on the day before subscription end date, one
 
 2. **Configuration** (`appsettings.json`):
    - `PremiumThresholdPercent` — minimum premium ratio (%) to trigger calendar events (default: 30.0)
-   - `ScheduleHour` / `ScheduleMinute` — daily run time in local time (default: 15:10)
    - `CalendarId` — Google Calendar ID (default: `"primary"`)
    - `DbPath` — SQLite DB path (default: `"data/lottery.db"`)
    - `GoogleCredentialsPath` — path to `credentials.json` (default: `"credentials.json"`)
