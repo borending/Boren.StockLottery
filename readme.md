@@ -1,5 +1,9 @@
 # Boren.StockLottery
 
+![.NET](https://img.shields.io/badge/.NET-8.0-512bd4?logo=dotnet)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Build](https://github.com/borending/Boren.StockLottery/actions/workflows/lottery.yml/badge.svg)
+
 ## 專案概述
 自動抓取台灣股票公開申購資料，依溢價比例篩選，並將重要日期寫入 Google 日曆的排程服務
 
