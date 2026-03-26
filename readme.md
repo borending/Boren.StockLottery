@@ -7,6 +7,8 @@
 ## 專案概述
 自動抓取台灣股票公開申購資料，依溢價比例篩選，並將重要日期寫入 Google 日曆的排程服務
 
+> 開發筆記：[使用 Claude Code 開發自動化股票申購提醒](https://www.dotblogs.com.tw/TAKALEARINGNOTES/2026/03/26/152249)
+
 ## 專案目標
 1. 使用Claude Code 體驗自動化開發
 2. 每天自動從 ibfs.com.tw 抓取申購中的股票清單（含溢價率）
