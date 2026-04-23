@@ -62,17 +62,18 @@ public class GoogleCalendarService : ICalendarService
         DateOnly.TryParseExact(stock.SubscriptionEndDate, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var endDate);
         DateOnly.TryParseExact(stock.LotteryDate, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var lotteryDate);
 
-        // SubscriptionPrice is the total subscription cost (扣款金額) from the ibfs page, e.g. 72070
-        var title = $"{stock.StockCode}{stock.StockName} {stock.SubscriptionPrice:0}:{premiumRatio:F2}%";
+        var baseTitle = $"{stock.StockCode}{stock.StockName} NTD {stock.SubscriptionPrice:0}→{premiumRatio:F2}%";
+        var subscribeTitle = $"申購:{baseTitle}";
+        var announceTitle = $"公布:{baseTitle}";
 
         // Event 1: Day before subscription end date
         var dayBeforeEnd = endDate.AddDays(-1);
-        await InsertAllDayEventAsync(title, dayBeforeEnd, ct);
-        _logger.LogInformation("已在 {Date} 建立行事曆事件：{Title}", dayBeforeEnd, title);
+        await InsertAllDayEventAsync(subscribeTitle, dayBeforeEnd, ct);
+        _logger.LogInformation("已在 {Date} 建立行事曆事件：{Title}", dayBeforeEnd, subscribeTitle);
 
         // Event 2: Lottery date
-        await InsertAllDayEventAsync(title, lotteryDate, ct);
-        _logger.LogInformation("已在 {Date} 建立行事曆事件：{Title}", lotteryDate, title);
+        await InsertAllDayEventAsync(announceTitle, lotteryDate, ct);
+        _logger.LogInformation("已在 {Date} 建立行事曆事件：{Title}", lotteryDate, announceTitle);
     }
 
     private async Task InsertAllDayEventAsync(string title, DateOnly date, CancellationToken ct)

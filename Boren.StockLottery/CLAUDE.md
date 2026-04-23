@@ -47,7 +47,10 @@ dotnet test
 - `SubscriptionShares` — 申購股數
 - `LotteryDate` / `SubscriptionEndDate` — `"yyyy-MM-dd"` strings
 
-**Calendar event title format:** `{StockCode}{StockName} {SubscriptionPrice:0}:{premiumRatio:F2}%`
+**Calendar event title format:**
+- Day before subscription end: `申購:{StockCode}{StockName} NTD {SubscriptionPrice:0}→{premiumRatio:F2}%`
+- Lottery date: `公布:{StockCode}{StockName} NTD {SubscriptionPrice:0}→{premiumRatio:F2}%`
+
 Two all-day events are created: one on the day before subscription end date, one on the lottery date.
 
 **Configuration:** `appsettings.json` → `Configuration/AppSettings.cs` (section key: `"AppSettings"`). Can also be overridden via env vars (e.g. `AppSettings__PremiumThresholdPercent`) — used by GitHub Actions to inject `vars.PREMIUM_THRESHOLD_PERCENT`.
