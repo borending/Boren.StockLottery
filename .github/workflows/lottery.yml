@@ -39,3 +39,4 @@ jobs:
         run: dotnet run --project Boren.StockLottery.csproj -c Release --no-build
         env:
           AppSettings__PremiumThresholdPercent: ${{ vars.PREMIUM_THRESHOLD_PERCENT }}
+          AppSettings__MaxSubscriptionPrice: ${{ vars.MAX_SUBSCRIPTION_PRICE }}

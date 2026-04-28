@@ -38,6 +38,16 @@ public class LotteryOrchestrator : ILotteryOrchestrator
             return;
         }
 
+        if (_settings.MaxSubscriptionPrice > 0)
+        {
+            var before = subscriptions.Count;
+            subscriptions = subscriptions
+                .Where(s => s.SubscriptionPrice <= _settings.MaxSubscriptionPrice)
+                .ToList();
+            _logger.LogInformation("金額篩選（上限 {Max:0}）：{Before} → {After} 筆",
+                _settings.MaxSubscriptionPrice, before, subscriptions.Count);
+        }
+
         int newCount = 0, calendarCount = 0;
 
         foreach (var stock in subscriptions)
