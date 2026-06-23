@@ -2,11 +2,32 @@ name: Stock Lottery
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # UTC 03:00 = Asia/Taipei 11:00
+    - cron: '0 3 * * *'  # UTC 03:00 = Asia/Taipei 11:00，每日執行
+    - cron: '0 3 * * 1'  # UTC 03:00 週一，keep-alive commit
   workflow_dispatch:       # 手動觸發
 
 jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 3 * * 1'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update timestamp
+        run: echo "Last updated: $(date -u)" > .github/last-updated.txt
+
+      - name: Commit and push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add .github/last-updated.txt
+          git commit -m "chore: update last active timestamp"
+          git push
+
   run:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 3 * * *'
     runs-on: ubuntu-latest
 
     steps:

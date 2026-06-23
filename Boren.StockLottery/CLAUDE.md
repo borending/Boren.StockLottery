@@ -71,6 +71,7 @@ Two all-day events are created: one on the day before subscription end date, one
 
 2. **Configuration** (`appsettings.json`):
    - `PremiumThresholdPercent` — minimum premium ratio (%) to trigger calendar events (default: 30.0)
+   - `MaxSubscriptionPrice` — skip stocks whose total subscription cost exceeds this value; 0 = no limit (default: 0)
    - `CalendarId` — Google Calendar ID (default: `"primary"`)
    - `DbPath` — SQLite DB path (default: `"data/lottery.db"`)
    - `GoogleCredentialsPath` — path to `credentials.json` (default: `"credentials.json"`)

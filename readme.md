@@ -91,10 +91,13 @@ SqliteStockRepository.IsProcessedAsync(StockCode, LotteryDate)
     ▼
 PremiumRatioPercent >= PremiumThresholdPercent ?
     ├─ 否 → 略過
-    └─ 是 → GoogleCalendarService.CreateEventsAsync()
-                ├─ 事件 1：申購截止日前一天（提醒去申購）
-                └─ 事件 2：抽籤日（提醒查結果）
-                   標題格式：{StockCode}{StockName} {扣款金額}:{溢價率}%
+    └─ 是 → MaxSubscriptionPrice > 0 且 SubscriptionPrice > MaxSubscriptionPrice ?
+                ├─ 是 → 略過（超過單次申購上限）
+                └─ 否 → GoogleCalendarService.CreateEventsAsync()
+                            ├─ 事件 1：申購截止日前一天（提醒去申購）
+                            │          標題格式：申購:{StockCode}{StockName} NTD {扣款金額}→{溢價率}%
+                            └─ 事件 2：抽籤日（提醒查結果）
+                                       標題格式：公布:{StockCode}{StockName} NTD {扣款金額}→{溢價率}%
     │
     ▼
 SqliteStockRepository.MarkProcessedAsync(StockCode, LotteryDate)
