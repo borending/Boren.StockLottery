@@ -3,13 +3,13 @@ name: Stock Lottery
 on:
   schedule:
     - cron: '0 3 * * *'  # UTC 03:00 = Asia/Taipei 11:00，每日執行
-    - cron: '0 3 * * 2'  # UTC 03:00 週二，keep-alive commit
+    - cron: '0 3 * * 3'  # UTC 03:00 週二，keep-alive commit
   workflow_dispatch:       # 手動觸發
 
 jobs:
   keep-alive:
     runs-on: ubuntu-latest
-    if: github.event.schedule == '0 3 * * 2'
+    if: github.event.schedule == '0 3 * * 3'
     permissions:
       contents: write
     steps:
